@@ -80,55 +80,76 @@ class HomePage extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildFeatureIcon('Waktu Solat', Icons.access_time),
-                _buildFeatureIcon('Kiblat', Icons.explore),
-                _buildFeatureIcon('Al-Quran', Icons.menu_book),
-                _buildFeatureIcon('Hadis', Icons.book),
-                _buildFeatureIcon(
-                    'Haji & Umrah',
-                    ImageIcon(AssetImage('assets/mosque.png')) as IconData
+                _buildMenuIcon(
+                  Icons.schedule,
+                  'Waktu Solat',
+                  const Color(0xFF6B2572),
                 ),
-              ],
+                _buildMenuIconWithImage(
+                  'assets/qibla.png',
+                  'Kiblat',
+                  const Color(0xFF6B2572),
+                ),
+                _buildMenuIconWithImage(
+                  'assets/read-quran.png',
+                  'Al-Quran',
+                  const Color(0xFF6B2572),
+                ),
+                _buildMenuIconWithImage(
+                  'assets/hadith.png',
+                  'Hadis',
+                  const Color(0xFF6B2572),
+                ),
+
+                ],
+                ),
+
             ),
-          ),
         ],
       ),
     );
   }
 
-//Features to build icons with label
-Widget _buildFeatureIcon(String label, IconData icon){
+  // Function to build the menu icons
+  Widget _buildMenuIcon(IconData icon, String label, Color color) {
     return Column(
       children: [
         Container(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.white,
             shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.2),
-                spreadRadius: 1.0,
-                blurRadius: 5.0,
-                offset: Offset(0,3) //change position of shadow
-              ),
-            ]
+            color: const Color(0xFFECECEC),
           ),
-          child: Icon(icon, size: 30.0, color: Color(0xFF5C0065),),
+          child: Icon(icon, size: 28, color: color),
         ),
-        SizedBox(height: 8.0),
+        const SizedBox(height: 8),
         Text(
           label,
-          style: TextStyle(
-            color: Colors.black54,
-            fontWeight: FontWeight.w500,
-          ),
+          style: const TextStyle(color: Colors.black54),
         ),
       ],
     );
-}
+  }
 
-
+  Widget _buildMenuIconWithImage(String assetPath, String label, Color color) {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: const Color(0xFFECECEC),
+          ),
+          child: Image.asset(assetPath, height: 28, width: 28, color: color),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          label,
+          style: const TextStyle(color: Colors.black54),
+        ),
+      ],
+    );
+  }
 
 
 

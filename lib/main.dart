@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:test3/homepage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -110,6 +111,10 @@ class LogScreen extends StatelessWidget {
             //Log Masuk Button
             ElevatedButton(
                 onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomePage()),
+                  );
 
                 },
                 child: Text(
