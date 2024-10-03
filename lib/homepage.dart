@@ -15,8 +15,10 @@ class HomePage extends StatelessWidget {
         actions: [
           IconButton(
               onPressed: (){},
-              icon: Icon(Icons.menu)
+              icon: Icon(
+                  Icons.menu),
           ),
+
         ],
       ),
       body: Column(
