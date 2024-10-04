@@ -29,7 +29,6 @@ class LogScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-
         centerTitle: true,
         title: Text(
           'Log Masuk',
@@ -50,66 +49,75 @@ class LogScreen extends StatelessWidget {
         ),
       ),
       backgroundColor: Colors.white,
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
+      body: SingleChildScrollView(
+        child:  Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(height: 70),
 
-            //UserName/Email text field
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Nama Pengguna / Email',
-                prefixIcon: Icon(Icons.person_outline),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
+              //UserName/Email text field
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: TextField(
+                  decoration: InputDecoration(
+                    labelText: 'Nama Pengguna / Email',
+                    prefixIcon: Icon(Icons.person_outline),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
                 ),
               ),
-            ),
-            SizedBox(height: 20),
+              SizedBox(height: 20),
 
-            //Password Text Field
-            TextField(
-              obscureText: true,
-              decoration: InputDecoration(
-                labelText: 'Katalaluan',
-                prefixIcon:Icon(Icons.lock_outline),
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.visibility_off),
-                  onPressed: () {  },
+              //Password Text Field
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: TextField(
+                  obscureText: true,
+                  decoration: InputDecoration(
+                      labelText: 'Katalaluan',
+                      prefixIcon:Icon(Icons.lock_outline),
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.visibility_off),
+                        onPressed: () {  },
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      )
+                  ),
                 ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                )
               ),
-            ),
-            SizedBox(height: 8.0),
+              SizedBox(height: 8.0),
 
-            //Remember Me Checkbox
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Checkbox(
+              //Remember Me Checkbox
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Checkbox(
                     value: false,
                     onChanged: (bool? value){},
-                ),
-                Text('Remember Me'),
-              ],
-            ),
-            //Lupa Nama Pengguna atau Katalaluan?
-            Align(
-              alignment: Alignment.center,
-              child: TextButton(
+                  ),
+                  Text('Remember Me'),
+                ],
+              ),
+              //Lupa Nama Pengguna atau Katalaluan?
+              Align(
+                alignment: Alignment.center,
+                child: TextButton(
                   onPressed: () {},
                   child: Text(
                     'Lupa Nama Pengguna atau Katalaluan?',
-                        style: TextStyle(color: Colors.black54),
+                    style: TextStyle(color: Colors.black54),
                   ),
+                ),
               ),
-            ),
-            //Log Masuk Button
-            ElevatedButton(
+              SizedBox(height: 15),
+              //Log Masuk Button
+              ElevatedButton(
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -129,34 +137,36 @@ class LogScreen extends StatelessWidget {
                   textStyle: TextStyle(fontSize: 18),
                 ),
               ),
-            SizedBox(height: 20),
+              SizedBox(height: 20),
 
-            //Or Divider
-            Row(
-              children: [
-                Expanded(child: Divider(color: Colors.black26,)),
-                Padding(
+              //Or Divider
+              Row(
+                children: [
+                  Expanded(child: Divider(color: Colors.black26,)),
+                  Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Text('Atau Log Masuk'),
-                ),
-                Expanded(child: Divider(color: Colors.black26,)),
-              ],
-            ),
-            SizedBox(height: 20.0),
-            
-            // Google Sign In Button
-            IconButton(
-                onPressed: () {},
-                icon: ImageIcon(
-                    AssetImage('assets/google-symbol.png'),
-                    size: 30.0,
-                ),
-            ),
-            SizedBox(height: 20.0,),
+                    child: Text('Atau Log Masuk'),
+                  ),
+                  Expanded(child: Divider(color: Colors.black26,)),
+                ],
+              ),
+              SizedBox(height: 30.0),
 
-            //Daftar Text
-            Center(
-              child: RichText(
+              // Google Sign In Button
+              IconButton(
+                onPressed: () {},
+                icon: Image.asset(
+                  'assets/google.png',
+                  height: 50.0,
+                  colorBlendMode: BlendMode.srcIn, // Specify the blending mode
+                ),
+              ),
+
+              SizedBox(height: 20.0,),
+
+              //Daftar Text
+              Center(
+                child: RichText(
                   text: TextSpan(
                     text: 'Tiada Akaun?',
                     style: TextStyle(color: Colors.black54),
@@ -170,9 +180,10 @@ class LogScreen extends StatelessWidget {
                       ),
                     ],
                   ),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
