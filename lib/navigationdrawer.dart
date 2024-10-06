@@ -19,7 +19,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           IconButton(
             onPressed: () {
-              _scaffoldKey.currentState?.closeEndDrawer();
+              _scaffoldKey.currentState?.closeEndDrawer(); // Close the end drawer
             },
             icon: Icon(
               Icons.close,

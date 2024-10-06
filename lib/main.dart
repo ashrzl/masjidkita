@@ -14,7 +14,6 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'MasjidKita',
       theme: ThemeData(
-
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
@@ -23,9 +22,20 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class LogScreen extends StatelessWidget {
-  const LogScreen ({super.key, required this.title});
+class LogScreen extends StatefulWidget {
+  const LogScreen({super.key, required this.title});
 
+  final String title;
+
+  @override
+  _LogScreenState createState() => _LogScreenState();
+}
+
+class _LogScreenState extends State<LogScreen> {
+  bool _passwordVisible = false;
+  bool _rememberMe = false;
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -50,7 +60,7 @@ class LogScreen extends StatelessWidget {
       ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
-        child:  Padding(
+        child: Padding(
           padding: const EdgeInsets.all(10),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -58,7 +68,7 @@ class LogScreen extends StatelessWidget {
             children: [
               SizedBox(height: 70),
 
-              //UserName/Email text field
+              // UserName/Email text field
               Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: TextField(
@@ -73,38 +83,49 @@ class LogScreen extends StatelessWidget {
               ),
               SizedBox(height: 20),
 
-              //Password Text Field
+              // Password Text Field
               Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: TextField(
-                  obscureText: true,
+                  obscureText: !_passwordVisible,
                   decoration: InputDecoration(
                       labelText: 'Katalaluan',
-                      prefixIcon:Icon(Icons.lock_outline),
+                      prefixIcon: Icon(Icons.lock_outline),
                       suffixIcon: IconButton(
-                        icon: Icon(Icons.visibility_off),
-                        onPressed: () {  },
+                        icon: Icon(
+                          _passwordVisible ? Icons.visibility : Icons.visibility_off,
+                          color: Colors.black,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _passwordVisible = !_passwordVisible;
+                          });
+                        },
                       ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
-                      )
-                  ),
+                      )),
                 ),
               ),
               SizedBox(height: 8.0),
 
-              //Remember Me Checkbox
+              // Remember Me Checkbox
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Checkbox(
-                    value: false,
-                    onChanged: (bool? value){},
+                    value: _rememberMe,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        _rememberMe = value ?? false;
+                      });
+                    },
                   ),
                   Text('Remember Me'),
                 ],
               ),
-              //Lupa Nama Pengguna atau Katalaluan?
+
+              // Lupa Nama Pengguna atau Katalaluan?
               Align(
                 alignment: Alignment.center,
                 child: TextButton(
@@ -116,14 +137,14 @@ class LogScreen extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 15),
-              //Log Masuk Button
+
+              // Log Masuk Button
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => HomePage()),
                   );
-
                 },
                 child: Text(
                   'Log Masuk',
@@ -139,15 +160,15 @@ class LogScreen extends StatelessWidget {
               ),
               SizedBox(height: 20),
 
-              //Or Divider
+              // Or Divider
               Row(
                 children: [
-                  Expanded(child: Divider(color: Colors.black26,)),
+                  Expanded(child: Divider(color: Colors.black26)),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: Text('Atau Log Masuk'),
                   ),
-                  Expanded(child: Divider(color: Colors.black26,)),
+                  Expanded(child: Divider(color: Colors.black26)),
                 ],
               ),
               SizedBox(height: 30.0),
@@ -162,19 +183,19 @@ class LogScreen extends StatelessWidget {
                 ),
               ),
 
-              SizedBox(height: 20.0,),
+              SizedBox(height: 20.0),
 
-              //Daftar Text
+              // Daftar Text
               Center(
                 child: RichText(
                   text: TextSpan(
                     text: 'Tiada Akaun?',
                     style: TextStyle(color: Colors.black54),
-                    children: <TextSpan> [
+                    children: <TextSpan>[
                       TextSpan(
                         text: 'Daftar',
                         style: TextStyle(
-                          color:Color(0xFF5C0065),
+                          color: Color(0xFF5C0065),
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -188,7 +209,4 @@ class LogScreen extends StatelessWidget {
       ),
     );
   }
-  final String title;
 }
-
-

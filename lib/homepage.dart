@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:test3/navigationdrawer.dart';
+import 'package:geolocator/geolocator.dart'; // Import geolocator package
+import 'package:geocoding/geocoding.dart'; // Import geocoding package for reverse geocoding
+import 'package:test3/navigationdrawer.dart'; // Custom navigation drawer widget
 
 class HomePage extends StatefulWidget {
   @override
@@ -9,11 +11,63 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _selectedIndex = 0; // To track the selected index of BottomNavigationBar
+  Position? _currentPosition; // Store the current position
+  String _currentAddress = 'Fetching location...'; // Store the current address or coordinates
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index; // Update the selected index when tapped
     });
+  }
+
+  // Function to get current location and perform reverse geocoding
+  Future<void> _getCurrentLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled, so we can't proceed.
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Permissions are denied, next time you could try to ask for permissions again.
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are denied forever, handle appropriately.
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    // When permissions are granted, get the current position
+    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+
+    // Reverse geocoding to get the address
+    List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
+
+    Placemark place = placemarks[0];
+
+    // Format the address
+    String address = ' ${place.locality}, ${place.administrativeArea}, ${place.country}';
+
+    setState(() {
+      _currentPosition = position;
+      _currentAddress = address; // Set the formatted address
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getCurrentLocation(); // Get location when the app starts
   }
 
   @override
@@ -26,6 +80,13 @@ class _HomePageState extends State<HomePage> {
         elevation: 0,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("Lokasi Sekarang:", style: TextStyle(color: Colors.white),),
+            Text(
+              _currentAddress, // Display the current location (name/address)
+              style: TextStyle(fontSize: 14, color: Colors.white),
+            ),
+          ],
         ),
         actions: [
           IconButton(
@@ -175,6 +236,15 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                 ],
+              ),
+            ),
+
+            // Add a button to manually fetch the location
+            Padding(
+              padding: EdgeInsets.all(16.0),
+              child: ElevatedButton(
+                onPressed: _getCurrentLocation,
+                child: Text("Get Current Location"),
               ),
             ),
           ],
