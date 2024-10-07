@@ -37,6 +37,9 @@ dependencies:
   cupertino_icons: ^1.0.2
   geolocator: ^10.0.0
   geocoding: ^2.0.0
+  http: ^0.13.3
+  google_maps_flutter: ^2.1.2
+  dio: ^5.0.0
 
 
 
@@ -68,6 +71,9 @@ flutter:
     - assets/kaabah.png
     - assets/google.png
     - assets/solat.png
+    - assets/background1.jpg
+    - assets/background2.jpg
+    - assets/copyright.png
 
 
   # To add assets to your application, add an assets section, like this:

@@ -17,15 +17,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          IconButton(
-            onPressed: () {
-              _scaffoldKey.currentState?.closeEndDrawer(); // Close the end drawer
-            },
-            icon: Icon(
-              Icons.close,
-              color: Color(0xFF6B2572),
-            ),
-          ),
           buildListTile(
             context,
             index: 0, // Assign index to each tile

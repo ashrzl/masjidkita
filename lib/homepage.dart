@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart'; // Import geolocator package
 import 'package:geocoding/geocoding.dart'; // Import geocoding package for reverse geocoding
+import 'package:test3/carianmasjid.dart';
 import 'package:test3/navigationdrawer.dart'; // Custom navigation drawer widget
 
 class HomePage extends StatefulWidget {
@@ -15,9 +16,24 @@ class _HomePageState extends State<HomePage> {
   String _currentAddress = 'Fetching location...'; // Store the current address or coordinates
 
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index; // Update the selected index when tapped
-    });
+
+    if (index == 0) {
+      Navigator.push(
+          context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
+    }
+    else if (index == 1) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => CarianMasjid())
+      );
+    }
+    // else {
+    //   Navigator.push(
+    //       context,
+    //       // MaterialPageRoute(builder: (context) => ProfilPage));
+    // }
   }
 
   // Function to get current location and perform reverse geocoding
@@ -76,12 +92,12 @@ class _HomePageState extends State<HomePage> {
       key: _scaffoldKey,
       backgroundColor: Color(0xFFF5F5F5),
       appBar: AppBar(
-        backgroundColor: Color(0xFF5C0065),
+        backgroundColor: Color(0xFF990099),
         elevation: 0,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Lokasi Sekarang:", style: TextStyle(color: Colors.white),),
+            Text("Lokasi Anda:", style: TextStyle(color: Colors.white),),
             Text(
               _currentAddress, // Display the current location (name/address)
               style: TextStyle(fontSize: 14, color: Colors.white),
@@ -109,7 +125,7 @@ class _HomePageState extends State<HomePage> {
             // Search bar for "Carian Masjid"
             Container(
               padding: EdgeInsets.all(16.0),
-              color: Color(0xFF5C0065),
+              color: Color(0xFF990099),
               child: Column(
                 children: [
                   TextField(
@@ -236,15 +252,6 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                 ],
-              ),
-            ),
-
-            // Add a button to manually fetch the location
-            Padding(
-              padding: EdgeInsets.all(16.0),
-              child: ElevatedButton(
-                onPressed: _getCurrentLocation,
-                child: Text("Get Current Location"),
               ),
             ),
           ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:test3/homepage.dart';
+import 'package:test3/homepage.dart'; // Make sure this path is correct
+import 'package:test3/splashscreen.dart'; // Make sure this path is correct
 
 void main() {
   runApp(const MyApp());
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const LogScreen(title: 'Log Masuk'),
+      home: SplashScreen(), // Replace with LogScreen() if you want it as the main screen
     );
   }
 }
@@ -32,8 +33,44 @@ class LogScreen extends StatefulWidget {
 }
 
 class _LogScreenState extends State<LogScreen> {
+  final _UsernameController = TextEditingController();
+  final _PasswordController = TextEditingController();
+
   bool _passwordVisible = false;
   bool _rememberMe = false;
+
+  // Mock implementation of the loginUser function
+  Future<bool> loginUser(String username, String password) async {
+    // Simulate a login process (replace with actual logic)
+    await Future.delayed(Duration(seconds: 2)); // Simulating network delay
+    return username == 'namaPengguna' && password == 'password'; // Mock credentials
+  }
+
+  // Call this when the login button is pressed
+  void _handleLogin() async {
+    final Username = _UsernameController.text;
+    final Password = _PasswordController.text;
+
+    try {
+      final success = await loginUser(Username, Password);
+      if (success) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
+      } else {
+        // Handle login error (show a message, etc.)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Login failed')),
+        );
+      }
+    } catch (e) {
+      // Handle any errors that may occur during login
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('An error occurred: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,9 +85,8 @@ class _LogScreenState extends State<LogScreen> {
             fontSize: 25,
           ),
         ),
-        backgroundColor: Color(0xFF5C0065),
+        backgroundColor: Color(0xFF990099),
         elevation: 22,
-        shadowColor: Colors.deepPurpleAccent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(25.0),
@@ -72,6 +108,7 @@ class _LogScreenState extends State<LogScreen> {
               Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: TextField(
+                  controller: _UsernameController,
                   decoration: InputDecoration(
                     labelText: 'Nama Pengguna / Email',
                     prefixIcon: Icon(Icons.person_outline),
@@ -87,24 +124,26 @@ class _LogScreenState extends State<LogScreen> {
               Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: TextField(
+                  controller: _PasswordController,
                   obscureText: !_passwordVisible,
                   decoration: InputDecoration(
-                      labelText: 'Katalaluan',
-                      prefixIcon: Icon(Icons.lock_outline),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _passwordVisible ? Icons.visibility : Icons.visibility_off,
-                          color: Colors.black,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _passwordVisible = !_passwordVisible;
-                          });
-                        },
+                    labelText: 'Katalaluan',
+                    prefixIcon: Icon(Icons.lock_outline),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _passwordVisible ? Icons.visibility : Icons.visibility_off,
+                        color: Colors.black,
                       ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      )),
+                      onPressed: () {
+                        setState(() {
+                          _passwordVisible = !_passwordVisible;
+                        });
+                      },
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
                 ),
               ),
               SizedBox(height: 8.0),
@@ -129,7 +168,9 @@ class _LogScreenState extends State<LogScreen> {
               Align(
                 alignment: Alignment.center,
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    // Add functionality for "Forgot Username or Password"
+                  },
                   child: Text(
                     'Lupa Nama Pengguna atau Katalaluan?',
                     style: TextStyle(color: Colors.black54),
@@ -140,12 +181,7 @@ class _LogScreenState extends State<LogScreen> {
 
               // Log Masuk Button
               ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => HomePage()),
-                  );
-                },
+                onPressed: _handleLogin,
                 child: Text(
                   'Log Masuk',
                   style: TextStyle(
@@ -153,7 +189,7 @@ class _LogScreenState extends State<LogScreen> {
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF5C0065),
+                  backgroundColor: Color(0xFF990099),
                   padding: EdgeInsets.symmetric(vertical: 15),
                   textStyle: TextStyle(fontSize: 18),
                 ),
@@ -175,11 +211,13 @@ class _LogScreenState extends State<LogScreen> {
 
               // Google Sign In Button
               IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  // Add functionality for Google Sign In
+                },
                 icon: Image.asset(
                   'assets/google.png',
                   height: 50.0,
-                  colorBlendMode: BlendMode.srcIn, // Specify the blending mode
+                  colorBlendMode: BlendMode.srcIn,
                 ),
               ),
 
