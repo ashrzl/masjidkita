@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:test3/homepage.dart'; // Make sure this path is correct
-import 'package:test3/splashscreen.dart'; // Make sure this path is correct
+import 'package:http/http.dart' as http;
+import 'package:test3/pages/homepage.dart'; // Make sure to import the HomePage
+import 'package:test3/splashscreen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,7 +20,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: SplashScreen(), // Replace with LogScreen() if you want it as the main screen
+      home: const SplashScreen(),
     );
   }
 }
@@ -33,43 +35,93 @@ class LogScreen extends StatefulWidget {
 }
 
 class _LogScreenState extends State<LogScreen> {
-  final _UsernameController = TextEditingController();
-  final _PasswordController = TextEditingController();
-
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool _isLoading = false;
   bool _passwordVisible = false;
   bool _rememberMe = false;
 
-  // Mock implementation of the loginUser function
-  Future<bool> loginUser(String username, String password) async {
-    // Simulate a login process (replace with actual logic)
-    await Future.delayed(Duration(seconds: 2)); // Simulating network delay
-    return username == 'namaPengguna' && password == 'password'; // Mock credentials
-  }
+  Future<void> loginUser(String username, String password) async {
+    const String apiUrl = "https://cmsb-env2.com.my/MasjidKita/api/Authentication/login";
 
-  // Call this when the login button is pressed
-  void _handleLogin() async {
-    final Username = _UsernameController.text;
-    final Password = _PasswordController.text;
+    if (username.isEmpty || password.isEmpty) {
+      _showErrorDialog("Input Error", "Username and password cannot be empty.");
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
 
     try {
-      final success = await loginUser(Username, Password);
-      if (success) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => HomePage()),
-        );
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(<String, String>{
+          'username': username,
+          'password': password,
+        }),
+      );
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['token'] != null) {
+          // Handle successful login
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomePage(), // Navigate to HomePage here
+            ),
+          );
+        } else {
+          _showErrorDialog("Error", "Unexpected response format. Please try again.");
+        }
       } else {
-        // Handle login error (show a message, etc.)
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Login failed')),
-        );
+        _showErrorDialog("Login Failed", "Invalid username or password. Please try again.");
       }
     } catch (e) {
-      // Handle any errors that may occur during login
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('An error occurred: $e')),
-      );
+      setState(() {
+        _isLoading = false;
+      });
+      _showErrorDialog("Error", "An error occurred. Please check your internet connection and try again.");
     }
+  }
+
+  void _login() {
+    final String username = _usernameController.text.trim();
+    final String password = _passwordController.text.trim();
+
+    if (username.isNotEmpty && password.isNotEmpty) {
+      loginUser(username, password);
+    } else {
+      _showErrorDialog("Error", "Please enter both username and password.");
+    }
+  }
+
+  void _showErrorDialog(String title, String content) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -77,7 +129,7 @@ class _LogScreenState extends State<LogScreen> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(
+        title: const Text(
           'Log Masuk',
           style: TextStyle(
             color: Colors.white,
@@ -85,9 +137,9 @@ class _LogScreenState extends State<LogScreen> {
             fontSize: 25,
           ),
         ),
-        backgroundColor: Color(0xFF990099),
+        backgroundColor: const Color(0xFF990099),
         elevation: 22,
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(25.0),
             bottomRight: Radius.circular(25.0),
@@ -102,33 +154,29 @@ class _LogScreenState extends State<LogScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              SizedBox(height: 70),
-
-              // UserName/Email text field
+              const SizedBox(height: 70),
               Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: TextField(
-                  controller: _UsernameController,
+                  controller: _usernameController,
                   decoration: InputDecoration(
                     labelText: 'Nama Pengguna / Email',
-                    prefixIcon: Icon(Icons.person_outline),
+                    prefixIcon: const Icon(Icons.person_outline),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                 ),
               ),
-              SizedBox(height: 20),
-
-              // Password Text Field
+              const SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: TextField(
-                  controller: _PasswordController,
+                  controller: _passwordController,
                   obscureText: !_passwordVisible,
                   decoration: InputDecoration(
                     labelText: 'Katalaluan',
-                    prefixIcon: Icon(Icons.lock_outline),
+                    prefixIcon: const Icon(Icons.lock_outline),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _passwordVisible ? Icons.visibility : Icons.visibility_off,
@@ -146,9 +194,7 @@ class _LogScreenState extends State<LogScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 8.0),
-
-              // Remember Me Checkbox
+              const SizedBox(height: 8.0),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -160,87 +206,35 @@ class _LogScreenState extends State<LogScreen> {
                       });
                     },
                   ),
-                  Text('Remember Me'),
+                  const Text('Remember Me'),
                 ],
               ),
-
-              // Lupa Nama Pengguna atau Katalaluan?
               Align(
                 alignment: Alignment.center,
                 child: TextButton(
-                  onPressed: () {
-                    // Add functionality for "Forgot Username or Password"
-                  },
-                  child: Text(
+                  onPressed: () {}, // Implement forgot password feature here
+                  child: const Text(
                     'Lupa Nama Pengguna atau Katalaluan?',
                     style: TextStyle(color: Colors.black54),
                   ),
                 ),
               ),
-              SizedBox(height: 15),
-
-              // Log Masuk Button
+              const SizedBox(height: 15),
               ElevatedButton(
-                onPressed: _handleLogin,
-                child: Text(
+                onPressed: _isLoading ? null : _login,
+                child: _isLoading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text(
                   'Log Masuk',
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
+                  style: TextStyle(color: Colors.white),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF990099),
-                  padding: EdgeInsets.symmetric(vertical: 15),
-                  textStyle: TextStyle(fontSize: 18),
+                  backgroundColor: const Color(0xFF990099),
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  textStyle: const TextStyle(fontSize: 18),
                 ),
               ),
-              SizedBox(height: 20),
-
-              // Or Divider
-              Row(
-                children: [
-                  Expanded(child: Divider(color: Colors.black26)),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Text('Atau Log Masuk'),
-                  ),
-                  Expanded(child: Divider(color: Colors.black26)),
-                ],
-              ),
-              SizedBox(height: 30.0),
-
-              // Google Sign In Button
-              IconButton(
-                onPressed: () {
-                  // Add functionality for Google Sign In
-                },
-                icon: Image.asset(
-                  'assets/google.png',
-                  height: 50.0,
-                  colorBlendMode: BlendMode.srcIn,
-                ),
-              ),
-
-              SizedBox(height: 20.0),
-
-              // Daftar Text
-              Center(
-                child: RichText(
-                  text: TextSpan(
-                    text: 'Tiada Akaun?',
-                    style: TextStyle(color: Colors.black54),
-                    children: <TextSpan>[
-                      TextSpan(
-                        text: 'Daftar',
-                        style: TextStyle(
-                          color: Color(0xFF5C0065),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              const SizedBox(height: 20),
             ],
           ),
         ),

@@ -107,10 +107,10 @@ class _CarianMasjidState extends State<CarianMasjid> {
     // Navigate based on the selected index
     switch (index) {
       case 0:
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => HomePage()),
-        );
+        // Navigator.pushReplacement(
+        //   context,
+        //   MaterialPageRoute(builder: (context) => HomePage()),
+        // );
         break;
       case 1:
       // Stay on the current page (CarianMasjid)
