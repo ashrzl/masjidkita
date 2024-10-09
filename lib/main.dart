@@ -42,7 +42,7 @@ class _LogScreenState extends State<LogScreen> {
   bool _rememberMe = false;
 
   Future<void> loginUser(String username, String password) async {
-    const String apiUrl = "https://cmsb-env2.com.my/MasjidKita/api/Authentication/login";
+    const String apiUrl = "https://10.0.2.2:4433/api/Authentication/login";
 
     if (username.isEmpty || password.isEmpty) {
       _showErrorDialog("Input Error", "Username and password cannot be empty.");

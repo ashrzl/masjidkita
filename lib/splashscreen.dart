@@ -47,7 +47,7 @@ class _SplashScreenState extends State<SplashScreen>
               Expanded(
                 child: Center(
                   child: const Text(
-                    'KariahKita',
+                    'MasjidKita',
                     style: TextStyle(
                       color: Colors.white,
                       fontStyle: FontStyle.italic,

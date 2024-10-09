@@ -10,9 +10,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  int _selectedIndex = 0; // To track the selected index of BottomNavigationBar
-  Position? _currentPosition; // Store the current position
-  String _currentAddress = 'Fetching location...'; // Store the current address or coordinates
+  int _selectedIndex = 0;
+  Position? _currentPosition;
+  String _currentAddress = 'Fetching location...';
 
   void _onItemTapped(int index) {
     setState(() {
