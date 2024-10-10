@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart'; // Import geolocator package
-import 'package:geocoding/geocoding.dart'; // Import geocoding package for reverse geocoding
-import 'package:test3/carianmasjid.dart';
-import 'package:test3/navigationdrawer.dart'; // Custom navigation drawer widget
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:test3/navigationdrawer.dart';
+import 'package:test3/pages/carianmasjid.dart';
+import 'package:test3/pages/loginpage.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -11,29 +12,31 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  int _selectedIndex = 0; // To track the selected index of BottomNavigationBar
-  Position? _currentPosition; // Store the current position
-  String _currentAddress = 'Fetching location...'; // Store the current address or coordinates
+  int _selectedIndex = 0;
+  Position? _currentPosition;
+  String _currentAddress = 'Fetching location...';
 
   void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index; // Update the selected index
+    });
 
-    if (index == 0) {
-      Navigator.push(
+    // Navigate based on the selected index
+    switch (index) {
+      case 0:
+        Navigator.pushReplacement(
           context,
-        MaterialPageRoute(builder: (context) => HomePage()),
-      );
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
+        break;
+      case 1:
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => CarianMasjid()));
+        break;
+      case 2:
+      // Navigate to the profile page (you'll need to create this)
+        break;
     }
-    else if (index == 1) {
-      Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => CarianMasjid())
-      );
-    }
-    // else {
-    //   Navigator.push(
-    //       context,
-    //       // MaterialPageRoute(builder: (context) => ProfilPage));
-    // }
   }
 
   // Function to get current location and perform reverse geocoding
@@ -44,7 +47,6 @@ class _HomePageState extends State<HomePage> {
     // Test if location services are enabled.
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      // Location services are not enabled, so we can't proceed.
       return Future.error('Location services are disabled.');
     }
 
@@ -52,27 +54,28 @@ class _HomePageState extends State<HomePage> {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        // Permissions are denied, next time you could try to ask for permissions again.
         return Future.error('Location permissions are denied');
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
-      // Permissions are denied forever, handle appropriately.
       return Future.error(
           'Location permissions are permanently denied, we cannot request permissions.');
     }
 
     // When permissions are granted, get the current position
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
 
     // Reverse geocoding to get the address
-    List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
+    List<Placemark> placemarks =
+    await placemarkFromCoordinates(position.latitude, position.longitude);
 
     Placemark place = placemarks[0];
 
     // Format the address
-    String address = ' ${place.locality}, ${place.administrativeArea}, ${place.country}';
+    String address =
+        '${place.locality}, ${place.administrativeArea}, ${place.country}';
 
     setState(() {
       _currentPosition = position;
@@ -92,12 +95,24 @@ class _HomePageState extends State<HomePage> {
       key: _scaffoldKey,
       backgroundColor: Color(0xFFF5F5F5),
       appBar: AppBar(
-        backgroundColor: Color(0xFF990099),
+        backgroundColor: Color(0xFF5C0065),
         elevation: 0,
+        leading: IconButton(
+          icon: Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+          ),
+          onPressed: () {
+            Navigator.pushReplacement(
+                context,
+              MaterialPageRoute(builder: (context) => LoginScreen(title: '',)),
+            );// Pop the current screen to go back
+          },
+        ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Lokasi Anda:", style: TextStyle(color: Colors.white),),
+            Text("Lokasi Anda:", style: TextStyle(color: Colors.white)),
             Text(
               _currentAddress, // Display the current location (name/address)
               style: TextStyle(fontSize: 14, color: Colors.white),
@@ -125,7 +140,7 @@ class _HomePageState extends State<HomePage> {
             // Search bar for "Carian Masjid"
             Container(
               padding: EdgeInsets.all(16.0),
-              color: Color(0xFF990099),
+              color: Color(0xFF5C0065),
               child: Column(
                 children: [
                   TextField(

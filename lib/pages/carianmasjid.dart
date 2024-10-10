@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert'; // For decoding JSON
-import 'package:test3/homepage.dart'; // Assuming HomePage is defined in your project
+import 'dart:convert';
+import 'package:test3/navigationdrawer.dart';  // Adjust to your file structure
+import 'package:test3/pages/homepage.dart';    // Adjust to your file structure
 
 class CarianMasjid extends StatefulWidget {
   @override
@@ -17,12 +18,15 @@ class _CarianMasjidState extends State<CarianMasjid> {
   String _currentAddress = 'Fetching location...';
   List<String> _mosqueResults = []; // Store mosque results
 
+  // Replace with your actual Google API Key
+  static const String apiKey = 'YOUR_GOOGLE_API_KEY';
+
   // Function to get the user's current location
   Future<void> _getCurrentLocation() async {
     bool serviceEnabled;
     LocationPermission permission;
 
-    // Test if location services are enabled.
+    // Check if location services are enabled
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       return Future.error('Location services are disabled.');
@@ -55,47 +59,35 @@ class _CarianMasjidState extends State<CarianMasjid> {
     setState(() {
       _currentPosition = position;
       _currentAddress = address; // Set the formatted address
-      _searchMosquesNearby(); // Trigger the search once location is available
     });
+
+    // Search for nearby mosques after location is fetched
+    await _searchMosquesNearby();
   }
 
   // Function to call an external API to search for mosques nearby
   Future<void> _searchMosquesNearby() async {
-    if (_currentPosition == null) return;
+    if (_currentPosition != null) {
+      final double latitude = _currentPosition!.latitude;
+      final double longitude = _currentPosition!.longitude;
 
-    final double latitude = _currentPosition!.latitude;
-    final double longitude = _currentPosition!.longitude;
+      final String url =
+          'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$latitude,$longitude&radius=5000&type=mosque&key=$apiKey';
 
-    // Replace this URL with the real API URL and API key
-    final String apiKey = 'masjid'; // Obtain an API key
-    final String apiUrl =
-       'https://api.example.com/nearby_mosques?lat=$latitude&lon=$longitude&key=$apiKey';
-
-    try {
-      final response = await http.get(Uri.parse(apiKey));
+      final response = await http.get(Uri.parse(url));
 
       if (response.statusCode == 200) {
-        // Parse the response body as JSON
-        final data = json.decode(response.body);
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        final List<dynamic> results = data['results'];
 
-        // Extract the mosque names from the response
-        List<String> mosqueNames = (data['results'] as List)
-            .map((result) => result['name'].toString())
-            .toList();
-
-        // Update the state with the mosque results
         setState(() {
-          _mosqueResults = mosqueNames;
+          _mosqueResults = results
+              .map((result) => result['name'].toString())
+              .toList(); // Get the names of the mosques
         });
       } else {
-        throw Exception('Failed to load mosque data');
+        print('Failed to load mosque data');
       }
-    } catch (e) {
-      // Handle any errors
-      print('Error occurred while fetching mosques: $e');
-      setState(() {
-        _mosqueResults = ['Error retrieving data'];
-      });
     }
   }
 
@@ -133,18 +125,27 @@ class _CarianMasjidState extends State<CarianMasjid> {
       key: _scaffoldKey,
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF990099),
+        backgroundColor: Color(0xFF5C0065),
         elevation: 0,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => HomePage()),
+            );// Pop the current screen to go back
+          },
+        ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Lokasi Anda:",
-              style: TextStyle(color: Colors.white),
-            ),
+            Text("Lokasi Anda:", style: TextStyle(color: Colors.white)),
             Text(
               _currentAddress, // Display the current location (name/address)
-              style: const TextStyle(fontSize: 14, color: Colors.white),
+              style: TextStyle(fontSize: 14, color: Colors.white),
             ),
           ],
         ),
@@ -153,7 +154,7 @@ class _CarianMasjidState extends State<CarianMasjid> {
             onPressed: () {
               _scaffoldKey.currentState?.openEndDrawer(); // Open end drawer on click
             },
-            icon: const Icon(
+            icon: Icon(
               Icons.menu,
               color: Colors.white,
             ),
@@ -161,7 +162,7 @@ class _CarianMasjidState extends State<CarianMasjid> {
         ],
       ),
       endDrawer: Drawer(
-        child: Container(), // Load ProfileScreen into the end drawer (you can replace it)
+        child: ProfileScreen(), // Load ProfileScreen into the end drawer (you can replace it)
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -169,7 +170,7 @@ class _CarianMasjidState extends State<CarianMasjid> {
             // Search bar for "Carian Masjid"
             Container(
               padding: const EdgeInsets.all(16.0),
-              color: const Color(0xFF990099),
+              color: const Color(0xFF5C0065),
               child: Column(
                 children: [
                   TextField(
