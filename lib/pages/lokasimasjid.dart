@@ -1,32 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:test3/navigationdrawer.dart';  // Adjust to your file structure
-import 'package:test3/pages/homepage.dart';    // Adjust to your file structure
+import 'package:test3/pages/carianmasjid.dart';
 
-class CarianMasjid extends StatefulWidget {
+class LokasiMasjid extends StatefulWidget {
   @override
-  _CarianMasjidState createState() => _CarianMasjidState();
+  _LokasiMasjidState createState() => _LokasiMasjidState();
+
 }
 
-class _CarianMasjidState extends State<CarianMasjid> {
+class _LokasiMasjidState extends State<LokasiMasjid> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _selectedIndex = 1; // Default to the second item
   Position? _currentPosition;
   String _currentAddress = 'Fetching location...';
-  List<String> _mosqueResults = []; // Store mosque results
-
-  // Replace with your actual Google API Key
-  static const String apiKey = 'YOUR_GOOGLE_API_KEY';
 
   // Function to get the user's current location
   Future<void> _getCurrentLocation() async {
     bool serviceEnabled;
     LocationPermission permission;
 
-    // Check if location services are enabled
+    // Test if location services are enabled.
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       return Future.error('Location services are disabled.');
@@ -60,35 +54,6 @@ class _CarianMasjidState extends State<CarianMasjid> {
       _currentPosition = position;
       _currentAddress = address; // Set the formatted address
     });
-
-    // Search for nearby mosques after location is fetched
-    await _searchMosquesNearby();
-  }
-
-  // Function to call an external API to search for mosques nearby
-  Future<void> _searchMosquesNearby() async {
-    if (_currentPosition != null) {
-      final double latitude = _currentPosition!.latitude;
-      final double longitude = _currentPosition!.longitude;
-
-      final String url =
-          'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$latitude,$longitude&radius=5000&type=mosque&key=$apiKey';
-
-      final response = await http.get(Uri.parse(url));
-
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> data = jsonDecode(response.body);
-        final List<dynamic> results = data['results'];
-
-        setState(() {
-          _mosqueResults = results
-              .map((result) => result['name'].toString())
-              .toList(); // Get the names of the mosques
-        });
-      } else {
-        print('Failed to load mosque data');
-      }
-    }
   }
 
   void _onItemTapped(int index) {
@@ -99,10 +64,10 @@ class _CarianMasjidState extends State<CarianMasjid> {
     // Navigate based on the selected index
     switch (index) {
       case 0:
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => HomePage()),
-        );
+      // Navigator.pushReplacement(
+      //   context,
+      //   MaterialPageRoute(builder: (context) => HomePage()),
+      // );
         break;
       case 1:
       // Stay on the current page (CarianMasjid)
@@ -112,7 +77,6 @@ class _CarianMasjidState extends State<CarianMasjid> {
         break;
     }
   }
-
   @override
   void initState() {
     super.initState();
@@ -135,7 +99,7 @@ class _CarianMasjidState extends State<CarianMasjid> {
           onPressed: () {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => HomePage()),
+              MaterialPageRoute(builder: (context) => CarianMasjid()),
             );// Pop the current screen to go back
           },
         ),
@@ -162,15 +126,14 @@ class _CarianMasjidState extends State<CarianMasjid> {
         ],
       ),
       endDrawer: Drawer(
-        child: ProfileScreen(), // Load ProfileScreen into the end drawer (you can replace it)
+        child: Container(), // Load ProfileScreen into the end drawer (you can replace it)
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Search bar for "Carian Masjid"
             Container(
               padding: const EdgeInsets.all(16.0),
-              color: const Color(0xFF5C0065),
+              color: const Color(0xFF990099),
               child: Column(
                 children: [
                   TextField(
@@ -196,50 +159,59 @@ class _CarianMasjidState extends State<CarianMasjid> {
                 ],
               ),
             ),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: EdgeInsets.all(30.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Carian Masjid',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20.0,
+            Divider(),
+
+            Padding(
+                padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  //Mosque Card
+                  Card(
+                    child: ListTile(
+
+                      title: Text('data'),
+                      subtitle: Text('data'),
+                      trailing: IconButton(
+                          onPressed: (){},
+                          icon: Icon(Icons.favorite_border),
                       ),
                     ),
-                    SizedBox(height: 40.0),
-                    Text(
-                      'Jumlah Masjid Dijumpai: ${_mosqueResults.length}',
-                      style: TextStyle(
-                        fontSize: 16.0,
+                  ),
+                  //Button Section
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                          onPressed: (){},
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.teal,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                          child: Text('KhairatKITA'),
                       ),
-                    ),
-                    SizedBox(height: 20.0),
-                    // Display search results
-                    _mosqueResults.isNotEmpty
-                        ? ListView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: _mosqueResults.length,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          title: Text(_mosqueResults[index]),
-                        );
-                      },
-                    )
-                        : Text('Tiada Masjid dijumpai.'),
-                  ],
-                ),
+                      SizedBox(width: 20),
+                      ElevatedButton(
+                        onPressed: () {},
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.purple,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
+                        child: Text('KariahKITA'),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-            ),
+            )
           ],
         ),
       ),
 
-      // Bottom Navigation Bar
+      //Bottom Navigation
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -264,6 +236,13 @@ class _CarianMasjidState extends State<CarianMasjid> {
         TextStyle(color: Colors.grey), // Style for unselected label
         onTap: _onItemTapped, // Handle the tap on an item
       ),
+
+
     );
   }
+
+
+
+
+
 }
