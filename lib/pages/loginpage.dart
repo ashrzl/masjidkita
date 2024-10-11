@@ -1,63 +1,56 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test3/pages/homepage.dart';
-import 'package:test3/services/api_service.dart';
+import 'package:test3/services/api_service.dart'; // Make sure to import the HomePage
 
-
-
-Future<void> saveToken(String token) async {
-  final prefs = await SharedPreferences.getInstance();
-  prefs.setString('auth_token', token);
-}
-
-
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key, required this.title});
+class LogScreen extends StatefulWidget {
+  const LogScreen({super.key, required this.title});
 
   final String title;
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _LogScreenState createState() => _LogScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LogScreenState extends State<LogScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final ApiService apiService =ApiService();
+  // final ApiService apiService = ApiService();
   bool isLoading = false;
   bool _passwordVisible = false;
-  bool _rememberMe = true;
+  bool _rememberMe = false;
 
-  Future<void> _login() async {
-    setState(() {
-      isLoading = true;
-    });
-
-    try {
-      final response = await apiService.login(
-        _usernameController.text,
-        _passwordController.text,
-      );
-
-      setState(() {
-        isLoading = false;
-      });
-
-      if (response.containsKey('token')) {
-        // Handle successful login
-        print('Login successful! Token: ${response['token']}');
-        // Save token using shared_preferences or navigate to another screen
-      } else {
-        // Handle unsuccessful login
-        print('Login failed: ${response['error']}');
-      }
-    } catch (e) {
-      setState(() {
-        isLoading = false;
-      });
-      print('Error: $e');
-    }
-  }
+  // Future<void> _login() async {
+  //   setState(() {
+  //     isLoading = true;
+  //   });
+  //
+  //   try {
+  //     print("Attempting login...");
+  //
+  //     // Attempt login using the ApiService
+  //     final response = await apiService.login(
+  //       _usernameController.text,
+  //       _passwordController.text,
+  //     );
+  //
+  //     setState(() {
+  //       isLoading = false;
+  //     });
+  //
+  //     // Check for a successful response
+  //     if (response.containsKey('token')) {
+  //       print("Login successful: ${response['token']}");
+  //       // Handle successful login (e.g., save token or navigate to another screen)
+  //     } else {
+  //       print("Login failed: ${response['error']}");
+  //     }
+  //   } catch (e) {
+  //     setState(() {
+  //       isLoading = false;
+  //     });
+  //     print("Error during login: $e");
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -155,14 +148,27 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 15),
-              // Log Masuk Button
-              isLoading
-                  ? CircularProgressIndicator()
-                  : ElevatedButton(
-                onPressed: _login,
-                child: Text("Login"),
+              ElevatedButton(
+                onPressed: (){
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => HomePage())
+                  );
+                },
+                child: isLoading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text(
+                  'Log Masuk',
+                  style: TextStyle(color: Colors.white),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF990099),
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  textStyle: const TextStyle(fontSize: 18),
+                ),
               ),
               const SizedBox(height: 20),
+
               // Or Divider
               Row(
                 children: [

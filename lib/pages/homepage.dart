@@ -105,7 +105,7 @@ class _HomePageState extends State<HomePage> {
           onPressed: () {
             Navigator.pushReplacement(
                 context,
-              MaterialPageRoute(builder: (context) => LoginScreen(title: '',)),
+              MaterialPageRoute(builder: (context) => LogScreen(title: '',)),
             );// Pop the current screen to go back
           },
         ),
