@@ -1,6 +1,8 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:test3/pages/homepage.dart';
-import 'package:test3/services/api_service.dart'; // Make sure to import the HomePage
+import 'package:test3/services/api_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class LogScreen extends StatefulWidget {
   const LogScreen({super.key, required this.title});
@@ -14,43 +16,63 @@ class LogScreen extends StatefulWidget {
 class _LogScreenState extends State<LogScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  // final ApiService apiService = ApiService();
+  final ApiService apiService = ApiService();
   bool isLoading = false;
   bool _passwordVisible = false;
   bool _rememberMe = false;
 
-  // Future<void> _login() async {
-  //   setState(() {
-  //     isLoading = true;
-  //   });
-  //
-  //   try {
-  //     print("Attempting login...");
-  //
-  //     // Attempt login using the ApiService
-  //     final response = await apiService.login(
-  //       _usernameController.text,
-  //       _passwordController.text,
-  //     );
-  //
-  //     setState(() {
-  //       isLoading = false;
-  //     });
-  //
-  //     // Check for a successful response
-  //     if (response.containsKey('token')) {
-  //       print("Login successful: ${response['token']}");
-  //       // Handle successful login (e.g., save token or navigate to another screen)
-  //     } else {
-  //       print("Login failed: ${response['error']}");
-  //     }
-  //   } catch (e) {
-  //     setState(() {
-  //       isLoading = false;
-  //     });
-  //     print("Error during login: $e");
-  //   }
-  // }
+  launchURL(String url) async {
+    Uri uri = Uri.parse(url);
+
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication); // Use launchUrl instead of launch
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  Future<void> _login() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      print("Attempting login...");
+
+      // Attempt login using the ApiService
+      final response = await apiService.login(
+        _usernameController.text,
+        _passwordController.text,
+      );
+
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+
+      // Check for a successful response
+      if (response.containsKey('token')) {
+        print("Login successful: ${response['token']}");
+        // Handle successful login (e.g., save token or navigate to another screen)
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => HomePage()),
+          );
+        }
+      } else {
+        print("Login failed: ${response['error']}");
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+      print("Error during login: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +129,9 @@ class _LogScreenState extends State<LogScreen> {
                     prefixIcon: const Icon(Icons.lock_outline),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _passwordVisible ? Icons.visibility : Icons.visibility_off,
+                        _passwordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
                         color: Colors.black,
                       ),
                       onPressed: () {
@@ -149,11 +173,8 @@ class _LogScreenState extends State<LogScreen> {
               ),
               const SizedBox(height: 15),
               ElevatedButton(
-                onPressed: (){
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => HomePage())
-                  );
+                onPressed: () {
+                  _login();
                 },
                 child: isLoading
                     ? const CircularProgressIndicator(color: Colors.white)
@@ -202,11 +223,20 @@ class _LogScreenState extends State<LogScreen> {
                     style: TextStyle(color: Colors.black54),
                     children: <TextSpan>[
                       TextSpan(
-                        text: 'Daftar',
+                        text: ' Daftar',
                         style: TextStyle(
                           color: Color(0xFF5C0065),
                           fontWeight: FontWeight.bold,
                         ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            const url = "https://cmsb-env2.com.my/";
+
+                            launchURL(url); // Updated to use the new function
+
+                            print("Daftar clicked!");
+                            // You can navigate to the registration screen or perform any action.
+                          },
                       ),
                     ],
                   ),
