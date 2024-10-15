@@ -2,26 +2,33 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  final String apiUrl = "http://192.168.0.64:4433/api/Authentication/login"; // replace with your API
+  final String apiUrl =
+      "http://10.0.2.2:7220/api/Authentication/Login";
 
   Future<Map<String, dynamic>> login(String username, String password) async {
-    final response = await http.post(
-      Uri.parse(apiUrl),
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: jsonEncode({
-        "userame": username,
-        "password": password,
-      }),
-    );
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: jsonEncode({
+          "Username": username,
+          "Password": password,
+        }),
+      );
 
-    if (response.statusCode == 200) {
-      // If the server returns a 200 OK response
-      return jsonDecode(response.body);
-    } else {
-      // If the server returns an error
-      throw Exception("Failed to login");
+      if (response.statusCode == 200) {
+        // If the server returns a 200 OK response
+        return jsonDecode(response.body);
+      } else {
+        // Error status handling
+        print("Response status: ${response.statusCode}");
+        print("Response body: ${response.body}");
+        throw Exception("Failed to login. Status code: ${response.statusCode}");
+      }
+    } catch (e) {
+      throw Exception("Error occurred: $e");
     }
   }
 }
