@@ -42,10 +42,10 @@ class _KariahPTCState extends State<KariahPTC> {
     // Navigate based on the selected index
     switch (index) {
       case 0:
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => HomePage()),
-        );
+        // Navigator.pushReplacement(
+        //   context,
+        //   MaterialPageRoute(builder: (context) => HomePage()),
+        // );
         break;
       case 1:
         Navigator.pushReplacement(
@@ -75,10 +75,10 @@ class _KariahPTCState extends State<KariahPTC> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => HomePage()),
-            ); // Pop the current screen to go back
+            // Navigator.pushReplacement(
+            //   context,
+            //   MaterialPageRoute(builder: (context) => HomePage()),
+            // ); // Pop the current screen to go back
           },
         ),
         actions: [

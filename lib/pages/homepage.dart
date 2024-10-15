@@ -6,6 +6,10 @@ import 'package:test3/pages/carianmasjid.dart';
 import 'package:test3/pages/loginpage.dart';
 
 class HomePage extends StatefulWidget {
+
+  final String username;
+  HomePage({Key? key, required this.username}) : super(key: key);
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -26,7 +30,7 @@ class _HomePageState extends State<HomePage> {
       case 0:
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => HomePage()),
+          MaterialPageRoute(builder: (context) => HomePage(username: widget.username)),
         );
         break;
       case 1:
@@ -99,12 +103,12 @@ class _HomePageState extends State<HomePage> {
         elevation: 0,
         leading: IconButton(
           icon: Icon(
-              Icons.arrow_back,
-              color: Colors.white,
+            Icons.arrow_back,
+            color: Colors.white,
           ),
           onPressed: () {
             Navigator.pushReplacement(
-                context,
+              context,
               MaterialPageRoute(builder: (context) => LogScreen(title: '',)),
             );// Pop the current screen to go back
           },
@@ -182,7 +186,7 @@ class _HomePageState extends State<HomePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Abu Bakar',
+                        widget.username,
                         style: TextStyle(
                             fontSize: 18.0,
                             fontWeight: FontWeight.bold,

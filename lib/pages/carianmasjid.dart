@@ -99,10 +99,10 @@ class _CarianMasjidState extends State<CarianMasjid> {
     // Navigate based on the selected index
     switch (index) {
       case 0:
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => HomePage()),
-        );
+        // Navigator.pushReplacement(
+        //   context,
+        //   MaterialPageRoute(builder: (context) => HomePage()),
+        // );
         break;
       case 1:
       // Stay on the current page (CarianMasjid)
@@ -133,10 +133,10 @@ class _CarianMasjidState extends State<CarianMasjid> {
             color: Colors.white,
           ),
           onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => HomePage()),
-            );// Pop the current screen to go back
+            // Navigator.pushReplacement(
+            //   context,
+            //   MaterialPageRoute(builder: (context) => HomePage()),
+            // );// Pop the current screen to go back
           },
         ),
         title: Column(

@@ -1,7 +1,8 @@
+import 'dart:convert';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:test3/pages/homepage.dart';
-import 'package:test3/services/api_service.dart';
+import 'package:http/http.dart';
+import 'package:test3/pages/homepage.dart'; // Make sure the import path is correct
 import 'package:url_launcher/url_launcher.dart';
 
 class LogScreen extends StatefulWidget {
@@ -16,7 +17,6 @@ class LogScreen extends StatefulWidget {
 class _LogScreenState extends State<LogScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final ApiService apiService = ApiService();
   bool isLoading = false;
   bool _passwordVisible = false;
   bool _rememberMe = false;
@@ -25,52 +25,55 @@ class _LogScreenState extends State<LogScreen> {
     Uri uri = Uri.parse(url);
 
     if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication); // Use launchUrl instead of launch
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
     } else {
       throw 'Could not launch $url';
     }
   }
 
-  Future<void> _login() async {
+  void login(String username, String password) async {
     setState(() {
-      isLoading = true;
+      isLoading = true; // Show loading spinner
     });
 
     try {
-      print("Attempting login...");
-
-      // Attempt login using the ApiService
-      final response = await apiService.login(
-        _usernameController.text,
-        _passwordController.text,
+      Response response = await post(
+        Uri.parse('https://api.cmsb-env2.com.my/api/Authentication/login'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'username': username,
+          'password': password,
+        }),
       );
 
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
-      }
+      print('Status code: ${response.statusCode}');
+      print('Response body: ${response.body}');
 
-      // Check for a successful response
-      if (response.containsKey('token')) {
-        print("Login successful: ${response['token']}");
-        // Handle successful login (e.g., save token or navigate to another screen)
-        if (mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => HomePage()),
-          );
-        }
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Log Masuk Berjaya!'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+        // Navigate to HomePage with username
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage(username: username)), // Pass the username
+        );
       } else {
-        print("Login failed: ${response['error']}");
+        print('Failed to log in. Status code: ${response.statusCode}');
+        // Handle login failure here (e.g., show error message)
       }
     } catch (e) {
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
-      }
-      print("Error during login: $e");
+      print('Error: ${e.toString()}');
+      // Handle errors here (e.g., show error message)
+    } finally {
+      setState(() {
+        isLoading = false; // Hide loading spinner
+      });
     }
   }
 
@@ -174,7 +177,8 @@ class _LogScreenState extends State<LogScreen> {
               const SizedBox(height: 15),
               ElevatedButton(
                 onPressed: () {
-                  _login();
+                  login(_usernameController.text.toString(),
+                      _passwordController.text.toString());
                 },
                 child: isLoading
                     ? const CircularProgressIndicator(color: Colors.white)
@@ -231,11 +235,7 @@ class _LogScreenState extends State<LogScreen> {
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
                             const url = "https://cmsb-env2.com.my/";
-
-                            launchURL(url); // Updated to use the new function
-
-                            print("Daftar clicked!");
-                            // You can navigate to the registration screen or perform any action.
+                            launchURL(url); // Open registration URL
                           },
                       ),
                     ],
